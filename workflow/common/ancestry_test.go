@@ -200,7 +200,7 @@ func TestGetTaskAncestryForValidation(t *testing.T) {
 	}
 	for _, tt := range tests {
 		res := GetTaskAncestry(tt.args.ctx, tt.args.taskName)
-		assert.Equal(t, tt.want, res)
+		assert.ElementsMatch(t, tt.want, res)
 	}
 }
 

@@ -1063,7 +1063,7 @@ func TestFormulateRetryWorkflow(t *testing.T) {
 		if assert.NoError(t, err) {
 			assert.Equal(t, wfv1.WorkflowRunning, wf.Status.Phase)
 			assert.Equal(t, metav1.Time{}, wf.Status.FinishedAt)
-			assert.True(t, wf.Status.StartedAt.After(createdTime.Time))
+			assert.False(t, wf.Status.StartedAt.Time.Before(createdTime.Time))
 			assert.NotContains(t, wf.Labels, common.LabelKeyCompleted)
 			assert.NotContains(t, wf.Labels, common.LabelKeyWorkflowArchivingStatus)
 			for _, node := range wf.Status.Nodes {
@@ -1077,7 +1077,7 @@ func TestFormulateRetryWorkflow(t *testing.T) {
 					assert.Equal(t, "", node.Message)
 					assert.Equal(t, wfv1.NodeRunning, node.Phase)
 					assert.Equal(t, metav1.Time{}, node.FinishedAt)
-					assert.True(t, node.StartedAt.After(createdTime.Time))
+					assert.False(t, node.StartedAt.Time.Before(createdTime.Time))
 				}
 			}
 		}

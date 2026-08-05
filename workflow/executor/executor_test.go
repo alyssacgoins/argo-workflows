@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -121,7 +122,7 @@ func TestIsBaseImagePath(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: string(os.PathSeparator) + "samedir",
+					Path: "/samedir",
 				},
 			},
 		},
@@ -130,7 +131,7 @@ func TestIsBaseImagePath(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: string(os.PathSeparator) + "samedir",
+					Path: "/samedir",
 				},
 			},
 		},
@@ -316,6 +317,10 @@ func TestUntar(t *testing.T) {
 }
 
 func TestChmod(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("chmod permission strings differ on Windows")
+	}
+
 	type perm struct {
 		dir  string
 		file string
