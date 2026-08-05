@@ -19,7 +19,7 @@ func TestAnyString(t *testing.T) {
 		if assert.NoError(t, err) {
 			assert.Equal(t, AnyStringPtr(""), i)
 		}
-		assert.Equal(t, "", i.String(), "string value does not have quotes")
+		assert.Empty(t, i.String(), "string value does not have quotes")
 	})
 	t.Run("String", func(t *testing.T) {
 		x := AnyStringPtr("my-string")

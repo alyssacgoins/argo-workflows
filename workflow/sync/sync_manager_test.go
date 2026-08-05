@@ -353,7 +353,7 @@ func TestSemaphoreWfLevel(t *testing.T) {
 		wfList, err := wfclientset.ArgoprojV1alpha1().Workflows("default").List(ctx, metav1.ListOptions{})
 		assert.NoError(t, err)
 		concurrenyMgr.Initialize(wfList.Items)
-		assert.Equal(t, 1, len(concurrenyMgr.syncLockMap))
+		assert.Len(t, concurrenyMgr.syncLockMap, 1)
 	})
 	t.Run("InitializeSynchronizationWithInvalid", func(t *testing.T) {
 		concurrenyMgr := NewLockManager(syncLimitFunc, func(key string) {
@@ -365,7 +365,7 @@ func TestSemaphoreWfLevel(t *testing.T) {
 		wfList, err := wfclientset.ArgoprojV1alpha1().Workflows("default").List(ctx, metav1.ListOptions{})
 		assert.NoError(t, err)
 		concurrenyMgr.Initialize(wfList.Items)
-		assert.Equal(t, 0, len(concurrenyMgr.syncLockMap))
+		assert.Empty(t, concurrenyMgr.syncLockMap)
 	})
 
 	t.Run("WfLevelAcquireAndRelease", func(t *testing.T) {
@@ -421,7 +421,7 @@ func TestSemaphoreWfLevel(t *testing.T) {
 		concurrenyMgr.Release(wf, "", wf.Spec.Synchronization)
 		assert.Equal(t, holderKey2, nextKey)
 		assert.NotNil(t, wf.Status.Synchronization)
-		assert.Equal(t, 0, len(wf.Status.Synchronization.Semaphore.Holding[0].Holders))
+		assert.Empty(t, wf.Status.Synchronization.Semaphore.Holding[0].Holders)
 
 		// Low priority workflow try to acquire the lock
 		status, wfUpdate, msg, err = concurrenyMgr.TryAcquire(wf1, "", wf1.Spec.Synchronization)
@@ -450,7 +450,7 @@ func TestSemaphoreWfLevel(t *testing.T) {
 		concurrenyMgr.ReleaseAll(wf1)
 		assert.Len(t, sema.pending.items, 1)
 		concurrenyMgr.ReleaseAll(wf3)
-		assert.Len(t, sema.pending.items, 0)
+		assert.Empty(t, sema.pending.items)
 	})
 }
 
@@ -668,7 +668,7 @@ func TestMutexWfLevel(t *testing.T) {
 		concurrenyMgr.ReleaseAll(wf1)
 		assert.Len(t, mutex.mutex.pending.items, 1)
 		concurrenyMgr.ReleaseAll(wf2)
-		assert.Len(t, mutex.mutex.pending.items, 0)
+		assert.Empty(t, mutex.mutex.pending.items)
 	})
 }
 
@@ -708,10 +708,10 @@ func TestCheckWorkflowExistence(t *testing.T) {
 		assert.Len(semaphore.getCurrentHolders(), 1)
 		assert.Len(semaphore.getCurrentPending(), 1)
 		concurrenyMgr.CheckWorkflowExistence()
-		assert.Len(mutex.getCurrentHolders(), 0)
+		assert.Empty(mutex.getCurrentHolders())
 		assert.Len(mutex.getCurrentPending(), 1)
-		assert.Len(semaphore.getCurrentHolders(), 0)
-		assert.Len(semaphore.getCurrentPending(), 0)
+		assert.Empty(semaphore.getCurrentHolders())
+		assert.Empty(semaphore.getCurrentPending())
 	})
 }
 

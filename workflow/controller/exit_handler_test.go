@@ -751,7 +751,7 @@ func TestWorkflowOnExitHttpReconciliation(t *testing.T) {
 
 	taskSets, err := woc.controller.wfclientset.ArgoprojV1alpha1().WorkflowTaskSets("").List(ctx, v1.ListOptions{})
 	if assert.NoError(t, err) {
-		assert.Len(t, taskSets.Items, 0)
+		assert.Empty(t, taskSets.Items)
 	}
 	woc.operate(ctx)
 
@@ -851,7 +851,7 @@ func TestWorkflowOnExitStepsHttpReconciliation(t *testing.T) {
 
 	taskSets, err := woc.controller.wfclientset.ArgoprojV1alpha1().WorkflowTaskSets("").List(ctx, v1.ListOptions{})
 	if assert.NoError(t, err) {
-		assert.Len(t, taskSets.Items, 0)
+		assert.Empty(t, taskSets.Items)
 	}
 
 	woc.operate(ctx)
@@ -996,10 +996,10 @@ status:
 
 	taskSets, err := woc.controller.wfclientset.ArgoprojV1alpha1().WorkflowTaskSets("").List(ctx, v1.ListOptions{})
 	if assert.NoError(t, err) {
-		assert.Len(t, taskSets.Items, 0)
+		assert.Empty(t, taskSets.Items)
 	}
 	woc.operate(ctx)
-	assert.Equal(t, woc.wf.Status.Phase, wfv1.WorkflowRunning)
+	assert.Equal(t, wfv1.WorkflowRunning, woc.wf.Status.Phase)
 }
 
 func TestStepsTemplateOnExitStatusArgument(t *testing.T) {

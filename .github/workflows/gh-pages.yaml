@@ -19,14 +19,14 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: 3.9
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
         with:
           go-version-file: go.mod
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           node-version: "19"
       # Use the same make target both locally and on CI to make it easier to debug failures.
@@ -34,12 +34,12 @@ jobs:
       # If markdownlint fixes issues, files will be changed. If so, fail the build.
       - run: git diff --exit-code
       # Upload the site so reviewers see it.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: docs
           path: site
           if-no-files-found: error
-      - uses: peaceiris/actions-gh-pages@v2.9.0
+      - uses: peaceiris/actions-gh-pages@76351d52b898c8c26089ac1980da3418927a77b7 # v2.9.0
         if: github.repository == 'argoproj/argo-workflows' && github.ref == 'refs/heads/master'
         env:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}

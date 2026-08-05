@@ -135,7 +135,7 @@ status:
 		for _, pod := range pods.Items {
 			assert.NotNil(t, pod)
 			assert.True(t, strings.HasSuffix(pod.Name, "-agent"))
-			assert.Equal(t, "testID", pod.ObjectMeta.Labels[common.LabelKeyControllerInstanceID])
+			assert.Equal(t, "testID", pod.Labels[common.LabelKeyControllerInstanceID])
 			assert.Equal(t, "virtual-node", pod.Spec.NodeName)
 		}
 	})
@@ -148,7 +148,7 @@ func TestAssessAgentPodStatus(t *testing.T) {
 		}
 		nodeStatus, msg := assessAgentPodStatus(pod1)
 		assert.Equal(t, wfv1.NodeFailed, nodeStatus)
-		assert.Equal(t, "", msg)
+		assert.Empty(t, msg)
 	})
 	t.Run("Running", func(t *testing.T) {
 		pod1 := &apiv1.Pod{
@@ -157,7 +157,7 @@ func TestAssessAgentPodStatus(t *testing.T) {
 
 		nodeStatus, msg := assessAgentPodStatus(pod1)
 		assert.Equal(t, wfv1.NodePhase(""), nodeStatus)
-		assert.Equal(t, "", msg)
+		assert.Empty(t, msg)
 	})
 	t.Run("Success", func(t *testing.T) {
 		pod1 := &apiv1.Pod{
@@ -165,7 +165,7 @@ func TestAssessAgentPodStatus(t *testing.T) {
 		}
 		nodeStatus, msg := assessAgentPodStatus(pod1)
 		assert.Equal(t, wfv1.NodePhase(""), nodeStatus)
-		assert.Equal(t, "", msg)
+		assert.Empty(t, msg)
 	})
 
 }

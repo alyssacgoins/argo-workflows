@@ -69,7 +69,7 @@ func TestLoadSsoClientIdFromSecret(t *testing.T) {
 	assert.Equal(t, "sso-client-id-value", ssoObject.config.ClientID)
 	assert.Equal(t, "sso-client-secret-value", ssoObject.config.ClientSecret)
 	assert.Equal(t, "argo_groups", ssoObject.customClaimName)
-	assert.Equal(t, "", config.IssuerAlias)
+	assert.Empty(t, config.IssuerAlias)
 	assert.Equal(t, 10*time.Hour, ssoObject.expiry)
 }
 
@@ -151,5 +151,5 @@ func TestGetSessionExpiry(t *testing.T) {
 	config := Config{
 		SessionExpiry: metav1.Duration{Duration: 5 * time.Hour},
 	}
-	assert.Equal(t, config.GetSessionExpiry(), 5*time.Hour)
+	assert.Equal(t, 5*time.Hour, config.GetSessionExpiry())
 }

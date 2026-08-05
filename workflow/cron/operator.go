@@ -47,7 +47,7 @@ type cronWfOperationCtx struct {
 func newCronWfOperationCtx(cronWorkflow *v1alpha1.CronWorkflow, wfClientset versioned.Interface, metrics *metrics.Metrics,
 	wftmplInformer wfextvv1alpha1.WorkflowTemplateInformer, cwftmplInformer wfextvv1alpha1.ClusterWorkflowTemplateInformer) *cronWfOperationCtx {
 	return &cronWfOperationCtx{
-		name:            cronWorkflow.ObjectMeta.Name,
+		name:            cronWorkflow.Name,
 		cronWf:          cronWorkflow,
 		wfClientset:     wfClientset,
 		wfClient:        wfClientset.ArgoprojV1alpha1().Workflows(cronWorkflow.Namespace),
@@ -55,8 +55,8 @@ func newCronWfOperationCtx(cronWorkflow *v1alpha1.CronWorkflow, wfClientset vers
 		wftmplInformer:  wftmplInformer,
 		cwftmplInformer: cwftmplInformer,
 		log: log.WithFields(log.Fields{
-			"workflow":  cronWorkflow.ObjectMeta.Name,
-			"namespace": cronWorkflow.ObjectMeta.Namespace,
+			"workflow":  cronWorkflow.Name,
+			"namespace": cronWorkflow.Namespace,
 		}),
 		metrics: metrics,
 		// inferScheduledTime returns an inferred scheduled time based on the current time and only works if it is called
@@ -116,7 +116,7 @@ func (woc *cronWfOperationCtx) run(ctx context.Context, scheduledRuntime time.Ti
 }
 
 func (woc *cronWfOperationCtx) validateCronWorkflow() error {
-	wftmplGetter := informer.NewWorkflowTemplateFromInformerGetter(woc.wftmplInformer, woc.cronWf.ObjectMeta.Namespace)
+	wftmplGetter := informer.NewWorkflowTemplateFromInformerGetter(woc.wftmplInformer, woc.cronWf.Namespace)
 	cwftmplGetter := informer.NewClusterWorkflowTemplateFromInformerGetter(woc.cwftmplInformer)
 	err := validate.ValidateCronWorkflow(wftmplGetter, cwftmplGetter, woc.cronWf)
 	if err != nil {
@@ -360,7 +360,7 @@ func (woc *cronWfOperationCtx) deleteOldestWorkflows(ctx context.Context, jobLis
 	}
 
 	sort.SliceStable(jobList, func(i, j int) bool {
-		return jobList[i].Status.FinishedAt.Time.After(jobList[j].Status.FinishedAt.Time)
+		return jobList[i].Status.FinishedAt.After(jobList[j].Status.FinishedAt.Time)
 	})
 
 	for _, wf := range jobList[workflowsToKeep:] {

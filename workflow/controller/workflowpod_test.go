@@ -199,7 +199,7 @@ func TestWFLevelServiceAccount(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, pod.Spec.ServiceAccountName, "foo")
+	assert.Equal(t, "foo", pod.Spec.ServiceAccountName)
 }
 
 // TestTmplServiceAccount verifies the ability to carry forward the Template level service account name
@@ -219,7 +219,7 @@ func TestTmplServiceAccount(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, pod.Spec.ServiceAccountName, "tmpl")
+	assert.Equal(t, "tmpl", pod.Spec.ServiceAccountName)
 }
 
 // TestWFLevelAutomountServiceAccountToken verifies the ability to carry forward workflow level AutomountServiceAccountToken to Podspec.
@@ -241,7 +241,7 @@ func TestWFLevelAutomountServiceAccountToken(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, *pod.Spec.AutomountServiceAccountToken, false)
+	assert.False(t, *pod.Spec.AutomountServiceAccountToken)
 }
 
 // TestTmplLevelAutomountServiceAccountToken verifies the ability to carry forward template level AutomountServiceAccountToken to Podspec.
@@ -265,7 +265,7 @@ func TestTmplLevelAutomountServiceAccountToken(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, *pod.Spec.AutomountServiceAccountToken, false)
+	assert.False(t, *pod.Spec.AutomountServiceAccountToken)
 }
 
 // verifyServiceAccountTokenVolumeMount is a helper function to verify service account token volume in a container.
@@ -376,7 +376,7 @@ func TestImagePullSecrets(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, pod.Spec.ImagePullSecrets[0].Name, "secret-name")
+	assert.Equal(t, "secret-name", pod.Spec.ImagePullSecrets[0].Name)
 }
 
 // TestAffinity verifies the ability to carry forward affinity rules
@@ -434,7 +434,7 @@ func TestTolerations(t *testing.T) {
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
 	assert.NotNil(t, pod.Spec.Tolerations)
-	assert.Equal(t, pod.Spec.Tolerations[0].Key, "nvidia.com/gpu")
+	assert.Equal(t, "nvidia.com/gpu", pod.Spec.Tolerations[0].Key)
 }
 
 // TestMetadata verifies ability to carry forward annotations and labels
@@ -451,13 +451,13 @@ func TestMetadata(t *testing.T) {
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
 	assert.NotNil(t, pod.ObjectMeta)
-	assert.NotNil(t, pod.ObjectMeta.Annotations)
-	assert.NotNil(t, pod.ObjectMeta.Labels)
+	assert.NotNil(t, pod.Annotations)
+	assert.NotNil(t, pod.Labels)
 	for k, v := range woc.execWf.Spec.Templates[0].Metadata.Annotations {
-		assert.Equal(t, pod.ObjectMeta.Annotations[k], v)
+		assert.Equal(t, pod.Annotations[k], v)
 	}
 	for k, v := range woc.execWf.Spec.Templates[0].Metadata.Labels {
-		assert.Equal(t, pod.ObjectMeta.Labels[k], v)
+		assert.Equal(t, pod.Labels[k], v)
 	}
 }
 
@@ -623,7 +623,7 @@ func Test_createWorkflowPod_rateLimited(t *testing.T) {
 		{Limit: 0, Burst: 1}: false,
 		{Limit: 1, Burst: 1}: false,
 	} {
-		limit := limit
+
 		t.Run(fmt.Sprintf("%v", limit), func(t *testing.T) {
 			wf := wfv1.MustUnmarshalWorkflow(helloWorldWf)
 			cancel, controller := newController(wf, func(c *WorkflowController) {
@@ -802,10 +802,10 @@ func TestVolumesPodSubstitution(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, 3, len(pod.Spec.Volumes))
+	assert.Len(t, pod.Spec.Volumes, 3)
 	assert.Equal(t, "volume-name", pod.Spec.Volumes[2].Name)
 	assert.Equal(t, "test-name", pod.Spec.Volumes[2].PersistentVolumeClaim.ClaimName)
-	assert.Equal(t, 2, len(pod.Spec.Containers[1].VolumeMounts))
+	assert.Len(t, pod.Spec.Containers[1].VolumeMounts, 2)
 	assert.Equal(t, "volume-name", pod.Spec.Containers[0].VolumeMounts[0].Name)
 }
 
@@ -841,7 +841,7 @@ func TestOutOfCluster(t *testing.T) {
 		assert.Len(t, pods.Items, 1)
 		pod := pods.Items[0]
 		assert.Equal(t, "kubeconfig", pod.Spec.Volumes[0].Name)
-		assert.Equal(t, "foo", pod.Spec.Volumes[0].VolumeSource.Secret.SecretName)
+		assert.Equal(t, "foo", pod.Spec.Volumes[0].Secret.SecretName)
 
 		waitCtr := pod.Spec.Containers[0]
 		verifyKubeConfigVolume(waitCtr, "kubeconfig", "/kube/config")
@@ -867,7 +867,7 @@ func TestOutOfCluster(t *testing.T) {
 		assert.Len(t, pods.Items, 1)
 		pod := pods.Items[0]
 		assert.Equal(t, "kube-config-secret", pod.Spec.Volumes[0].Name)
-		assert.Equal(t, "foo", pod.Spec.Volumes[0].VolumeSource.Secret.SecretName)
+		assert.Equal(t, "foo", pod.Spec.Volumes[0].Secret.SecretName)
 
 		// kubeconfig volume is the last one
 		waitCtr := pod.Spec.Containers[0]
@@ -890,7 +890,7 @@ func TestPriority(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, pod.Spec.PriorityClassName, "foo")
+	assert.Equal(t, "foo", pod.Spec.PriorityClassName)
 	assert.Equal(t, pod.Spec.Priority, &priority)
 }
 
@@ -907,7 +907,7 @@ func TestSchedulerName(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, pod.Spec.SchedulerName, "foo")
+	assert.Equal(t, "foo", pod.Spec.SchedulerName)
 }
 
 // TestInitContainers verifies the ability to set up initContainers
@@ -962,13 +962,13 @@ func TestInitContainers(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, 2, len(pod.Spec.InitContainers))
+	assert.Len(t, pod.Spec.InitContainers, 2)
 	foo := pod.Spec.InitContainers[1]
 	assert.Equal(t, "init-foo", foo.Name)
 	for _, v := range volumes {
 		assert.Contains(t, pod.Spec.Volumes, v)
 	}
-	assert.Equal(t, 3, len(foo.VolumeMounts))
+	assert.Len(t, foo.VolumeMounts, 3)
 	assert.Equal(t, "init-volume-name", foo.VolumeMounts[0].Name)
 	assert.Equal(t, "volume-name", foo.VolumeMounts[1].Name)
 	assert.Equal(t, "var-run-argo", foo.VolumeMounts[2].Name)
@@ -1027,14 +1027,14 @@ func TestSidecars(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, pods.Items, 1)
 	pod := pods.Items[0]
-	assert.Equal(t, 3, len(pod.Spec.Containers))
+	assert.Len(t, pod.Spec.Containers, 3)
 	assert.Equal(t, "wait", pod.Spec.Containers[0].Name)
 	assert.Equal(t, "main", pod.Spec.Containers[1].Name)
 	assert.Equal(t, "side-foo", pod.Spec.Containers[2].Name)
 	for _, v := range volumes {
 		assert.Contains(t, pod.Spec.Volumes, v)
 	}
-	assert.Equal(t, 3, len(pod.Spec.Containers[2].VolumeMounts))
+	assert.Len(t, pod.Spec.Containers[2].VolumeMounts, 3)
 	assert.Equal(t, "sidecar-volume-name", pod.Spec.Containers[2].VolumeMounts[0].Name)
 	assert.Equal(t, "volume-name", pod.Spec.Containers[2].VolumeMounts[1].Name)
 }
@@ -1438,7 +1438,7 @@ func TestPodSpecPatchPodName(t *testing.T) {
 		assert.Equal(t, wfv1.WorkflowRunning, woc.wf.Status.Phase)
 		pods, err := listPods(woc)
 		assert.NoError(t, err)
-		assert.True(t, len(pods.Items) > 0, "pod was not created successfully")
+		assert.Positive(t, len(pods.Items), "pod was not created successfully")
 		template, err := getPodTemplate(&pods.Items[0])
 		assert.NoError(t, err)
 		parameterValue := template.Outputs.Parameters[0].Value
@@ -1597,12 +1597,12 @@ func TestWindowsUNCPathsAreRemoved(t *testing.T) {
 		assert.Errorf(t, err, "could not find wait ctr index")
 	}
 	for _, mnt := range pod.Spec.Containers[waitCtrIdx].VolumeMounts {
-		assert.NotEqual(t, mnt.Name, "unc")
+		assert.NotEqual(t, "unc", mnt.Name)
 	}
 	for _, initCtr := range pod.Spec.InitContainers {
 		if initCtr.Name == common.InitContainerName {
 			for _, mnt := range initCtr.VolumeMounts {
-				assert.NotEqual(t, mnt.Name, "unc")
+				assert.NotEqual(t, "unc", mnt.Name)
 			}
 		}
 	}
@@ -1689,17 +1689,17 @@ func TestPodMetadata(t *testing.T) {
 	woc := newWoc(*wf)
 	mainCtr := woc.execWf.Spec.Templates[0].Container
 	pod, _ := woc.createWorkflowPod(ctx, wf.Name, []apiv1.Container{*mainCtr}, &wf.Spec.Templates[0], &createWorkflowPodOpts{})
-	assert.Equal(t, "foo", pod.ObjectMeta.Annotations["workflow-level-pod-annotation"])
-	assert.Equal(t, "bar", pod.ObjectMeta.Labels["workflow-level-pod-label"])
+	assert.Equal(t, "foo", pod.Annotations["workflow-level-pod-annotation"])
+	assert.Equal(t, "bar", pod.Labels["workflow-level-pod-label"])
 
 	wf = wfv1.MustUnmarshalWorkflow(wfWithPodMetadataAndTemplateMetadata)
 	woc = newWoc(*wf)
 	mainCtr = woc.execWf.Spec.Templates[0].Container
 	pod, _ = woc.createWorkflowPod(ctx, wf.Name, []apiv1.Container{*mainCtr}, &wf.Spec.Templates[0], &createWorkflowPodOpts{})
-	assert.Equal(t, "fizz", pod.ObjectMeta.Annotations["workflow-level-pod-annotation"])
-	assert.Equal(t, "buzz", pod.ObjectMeta.Labels["workflow-level-pod-label"])
-	assert.Equal(t, "hello", pod.ObjectMeta.Annotations["template-level-pod-annotation"])
-	assert.Equal(t, "world", pod.ObjectMeta.Labels["template-level-pod-label"])
+	assert.Equal(t, "fizz", pod.Annotations["workflow-level-pod-annotation"])
+	assert.Equal(t, "buzz", pod.Labels["workflow-level-pod-label"])
+	assert.Equal(t, "hello", pod.Annotations["template-level-pod-annotation"])
+	assert.Equal(t, "world", pod.Labels["template-level-pod-label"])
 }
 
 var wfWithContainerSet = `
@@ -1731,13 +1731,13 @@ func TestPodDefaultContainer(t *testing.T) {
 	woc := newWoc(*wf)
 	template := woc.execWf.Spec.Templates[0]
 	pod, _ := woc.createWorkflowPod(ctx, wf.Name, template.ContainerSet.GetContainers(), &wf.Spec.Templates[0], &createWorkflowPodOpts{})
-	assert.Equal(t, common.MainContainerName, pod.ObjectMeta.Annotations[common.AnnotationKeyDefaultContainer])
+	assert.Equal(t, common.MainContainerName, pod.Annotations[common.AnnotationKeyDefaultContainer])
 
 	wf = wfv1.MustUnmarshalWorkflow(wfWithContainerSet)
 	woc = newWoc(*wf)
 	template = woc.execWf.Spec.Templates[0]
 	pod, _ = woc.createWorkflowPod(ctx, wf.Name, template.ContainerSet.GetContainers(), &template, &createWorkflowPodOpts{})
-	assert.Equal(t, "b", pod.ObjectMeta.Annotations[common.AnnotationKeyDefaultContainer])
+	assert.Equal(t, "b", pod.Annotations[common.AnnotationKeyDefaultContainer])
 }
 
 func TestGetDeadline(t *testing.T) {
@@ -1785,10 +1785,10 @@ func TestPodMetadataWithWorkflowDefaults(t *testing.T) {
 	assert.NoError(t, err)
 	mainCtr := woc.execWf.Spec.Templates[0].Container
 	pod, _ := woc.createWorkflowPod(ctx, wf.Name, []apiv1.Container{*mainCtr}, &wf.Spec.Templates[0], &createWorkflowPodOpts{})
-	assert.Equal(t, "annotation-value", pod.ObjectMeta.Annotations["controller-level-pod-annotation"])
-	assert.Equal(t, "set-by-controller", pod.ObjectMeta.Annotations["workflow-level-pod-annotation"])
-	assert.Equal(t, "label-value", pod.ObjectMeta.Labels["controller-level-pod-label"])
-	assert.Equal(t, "set-by-controller", pod.ObjectMeta.Labels["workflow-level-pod-label"])
+	assert.Equal(t, "annotation-value", pod.Annotations["controller-level-pod-annotation"])
+	assert.Equal(t, "set-by-controller", pod.Annotations["workflow-level-pod-annotation"])
+	assert.Equal(t, "label-value", pod.Labels["controller-level-pod-label"])
+	assert.Equal(t, "set-by-controller", pod.Labels["workflow-level-pod-label"])
 	cancel() // need to cancel to spin up pods with the same name
 
 	cancel, controller = newController()
@@ -1808,10 +1808,10 @@ func TestPodMetadataWithWorkflowDefaults(t *testing.T) {
 	assert.NoError(t, err)
 	mainCtr = woc.execWf.Spec.Templates[0].Container
 	pod, _ = woc.createWorkflowPod(ctx, wf.Name, []apiv1.Container{*mainCtr}, &wf.Spec.Templates[0], &createWorkflowPodOpts{})
-	assert.Equal(t, "foo", pod.ObjectMeta.Annotations["workflow-level-pod-annotation"])
-	assert.Equal(t, "bar", pod.ObjectMeta.Labels["workflow-level-pod-label"])
-	assert.Equal(t, "annotation-value", pod.ObjectMeta.Annotations["controller-level-pod-annotation"])
-	assert.Equal(t, "label-value", pod.ObjectMeta.Labels["controller-level-pod-label"])
+	assert.Equal(t, "foo", pod.Annotations["workflow-level-pod-annotation"])
+	assert.Equal(t, "bar", pod.Labels["workflow-level-pod-label"])
+	assert.Equal(t, "annotation-value", pod.Annotations["controller-level-pod-annotation"])
+	assert.Equal(t, "label-value", pod.Labels["controller-level-pod-label"])
 	cancel()
 }
 
@@ -1835,11 +1835,11 @@ func TestPodExists(t *testing.T) {
 
 	// Sleep 1 second to wait for informer getting pod info
 	time.Sleep(time.Second)
-	existingPod, doesExist, err := woc.podExists(pod.ObjectMeta.Name)
+	existingPod, doesExist, err := woc.podExists(pod.Name)
 	assert.NoError(t, err)
 	assert.NotNil(t, existingPod)
 	assert.True(t, doesExist)
-	assert.EqualValues(t, pod, existingPod)
+	assert.Equal(t, pod, existingPod)
 }
 
 func TestProgressEnvVars(t *testing.T) {

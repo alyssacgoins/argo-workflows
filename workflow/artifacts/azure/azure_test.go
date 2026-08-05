@@ -41,7 +41,7 @@ func TestDetermineAccountName(t *testing.T) {
 		assert.NoError(t, err)
 		accountName, err := determineAccountName(u)
 		assert.Error(t, err)
-		assert.Equal(t, "", accountName)
+		assert.Empty(t, accountName)
 	}
 }
 
@@ -59,7 +59,7 @@ func TestArtifactDriver_DownloadDirectory_Subdir(t *testing.T) {
 	assert.NoError(t, err)
 	_, err = containerClient.Create(context.Background(), nil)
 	var responseError *azcore.ResponseError
-	if err != nil && !(errors.As(err, &responseError) && responseError.ErrorCode == "ContainerAlreadyExists") {
+	if err != nil && (!errors.As(err, &responseError) || responseError.ErrorCode != "ContainerAlreadyExists") {
 		assert.NoError(t, err)
 	}
 

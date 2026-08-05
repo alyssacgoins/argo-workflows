@@ -26,7 +26,7 @@ func expressionReplace(w io.Writer, expression string, env map[string]interface{
 	err := json.Unmarshal([]byte(fmt.Sprintf(`"%s"`, expression)), &unmarshalledExpression)
 	if err != nil && allowUnresolved {
 		log.WithError(err).Debug("unresolved is allowed ")
-		return w.Write([]byte(fmt.Sprintf("{{%s%s}}", kindExpression, expression)))
+		return fmt.Fprintf(w, "{{%s%s}}", kindExpression, expression)
 	}
 	if err != nil {
 		return 0, fmt.Errorf("failed to unmarshall JSON expression: %w", err)
@@ -36,7 +36,7 @@ func expressionReplace(w io.Writer, expression string, env map[string]interface{
 		// this is to make sure expressions like `sprig.int(retries)` don't get resolved to 0 when `retries` don't exist in the env
 		// See https://github.com/argoproj/argo-workflows/issues/5388
 		log.WithError(err).Debug("Retries are present and unresolved is allowed")
-		return w.Write([]byte(fmt.Sprintf("{{%s%s}}", kindExpression, expression)))
+		return fmt.Fprintf(w, "{{%s%s}}", kindExpression, expression)
 	}
 
 	// This is to make sure expressions which contains `workflow.status` and `work.failures` don't get resolved to nil
@@ -47,7 +47,7 @@ func expressionReplace(w io.Writer, expression string, env map[string]interface{
 	if ((hasWorkflowStatus(unmarshalledExpression) && !hasVarInEnv(env, "workflow.status")) ||
 		(hasWorkflowFailures(unmarshalledExpression) && !hasVarInEnv(env, "workflow.failures"))) &&
 		allowUnresolved {
-		return w.Write([]byte(fmt.Sprintf("{{%s%s}}", kindExpression, expression)))
+		return fmt.Fprintf(w, "{{%s%s}}", kindExpression, expression)
 	}
 
 	program, err := expr.Compile(unmarshalledExpression, expr.Env(env))
@@ -61,7 +61,7 @@ func expressionReplace(w io.Writer, expression string, env map[string]interface{
 	if (err != nil || result == nil) && allowUnresolved {
 		//  <nil> result is also un-resolved, and any error can be unresolved
 		log.WithError(err).Debug("Result and error are unresolved")
-		return w.Write([]byte(fmt.Sprintf("{{%s%s}}", kindExpression, expression)))
+		return fmt.Fprintf(w, "{{%s%s}}", kindExpression, expression)
 	}
 	if err != nil {
 		return 0, fmt.Errorf("failed to evaluate expression: %w", err)
@@ -72,7 +72,7 @@ func expressionReplace(w io.Writer, expression string, env map[string]interface{
 	resultMarshaled, err := json.Marshal(fmt.Sprintf("%v", result))
 	if (err != nil || resultMarshaled == nil) && allowUnresolved {
 		log.WithError(err).Debug("resultMarshaled is nil and unresolved is allowed ")
-		return w.Write([]byte(fmt.Sprintf("{{%s%s}}", kindExpression, expression)))
+		return fmt.Fprintf(w, "{{%s%s}}", kindExpression, expression)
 	}
 	if err != nil {
 		return 0, fmt.Errorf("failed to marshal evaluated expression: %w", err)

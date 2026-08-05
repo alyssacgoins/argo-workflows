@@ -125,15 +125,15 @@ spec:
 
 func TestDuplicateOrEmptyNames(t *testing.T) {
 	err := validate(dupTemplateNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "not unique")
 	}
 	err = validate(dupInputNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "not unique")
 	}
 	err = validate(emptyName)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "name is required")
 	}
 }
@@ -204,15 +204,15 @@ spec:
 
 func TestUnresolved(t *testing.T) {
 	err := validate(unresolvedInput)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to resolve")
 	}
 	err = validate(unresolvedStepInput)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to resolve")
 	}
 	err = validate(unresolvedOutput)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to resolve")
 	}
 }
@@ -398,7 +398,7 @@ spec:
 func TestStepStatusReferenceNoFutureReference(t *testing.T) {
 	err := validate(stepStatusReferencesNoFutureReference)
 	// Can't reference the status of steps that have not run yet
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to resolve {{steps.two.status}}")
 	}
 }
@@ -502,7 +502,7 @@ spec:
 
 func TestParamWithoutValue(t *testing.T) {
 	err := validate(paramWithoutValue)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "not supplied")
 	}
 }
@@ -663,7 +663,7 @@ spec:
 
 func TestInvalidTemplateName(t *testing.T) {
 	err := validate(invalidTemplateNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -690,7 +690,7 @@ spec:
 
 func TestInvalidArgParamName(t *testing.T) {
 	err := validate(invalidArgParamNames)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 var invalidArgArtNames = `
@@ -721,7 +721,7 @@ spec:
 
 func TestInvalidArgArtName(t *testing.T) {
 	err := validate(invalidArgArtNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -768,7 +768,7 @@ spec:
 
 func TestInvalidStepName(t *testing.T) {
 	err := validate(invalidStepNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -794,7 +794,7 @@ spec:
 
 func TestInvalidInputParamName(t *testing.T) {
 	err := validate(invalidInputParamNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -846,7 +846,7 @@ spec:
 
 func TestInvalidInputArtName(t *testing.T) {
 	err := validate(invalidInputArtNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -872,7 +872,7 @@ spec:
 
 func TestInvalidOutputArtName(t *testing.T) {
 	err := validate(invalidOutputArtNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 }
@@ -987,23 +987,23 @@ spec:
 
 func TestInvalidOutputParam(t *testing.T) {
 	err := validate(invalidOutputParamNames)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), invalidErr)
 	}
 	err = validate(invalidOutputMissingValueFrom)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "does not have valueFrom or value specified")
 	}
 	err = validate(invalidOutputMultipleValueFrom)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "multiple valueFrom")
 	}
 	err = validate(invalidOutputIncompatibleValueFromPath)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), ".path must be specified for Container templates")
 	}
 	err = validate(invalidOutputIncompatibleValueFromParam)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), ".parameter or expression must be specified for Steps templates")
 	}
 }
@@ -1032,7 +1032,7 @@ spec:
 
 func TestMultipleTemplateTypes(t *testing.T) {
 	err := validate(multipleTemplateTypes)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "multiple template types specified")
 	}
 }
@@ -1076,7 +1076,7 @@ spec:
 func TestExitHandler(t *testing.T) {
 	// ensure {{workflow.status}} is not available when not in exit handler
 	err := validate(workflowStatusNotOnExit)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 
 	// ensure {{workflow.status}} is available in exit handler
 	err = validate(exitHandlerWorkflowStatusOnExit)
@@ -1142,7 +1142,7 @@ func TestVolumeMountArtifactPathCollision(t *testing.T) {
 
 	err := ValidateWorkflow(wftmplGetter, cwftmplGetter, wf, ValidateOpts{})
 
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "already mounted")
 	}
 	// tweak the mount path and validation should now be successful
@@ -1171,7 +1171,7 @@ spec:
 
 func TestValidActiveDeadlineSeconds(t *testing.T) {
 	err := validate(activeDeadlineSeconds)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "activeDeadlineSeconds must be a positive integer > 0")
 	}
 }
@@ -1194,7 +1194,7 @@ spec:
 
 func TestLeafWithParallelism(t *testing.T) {
 	err := validate(leafWithParallelism)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "is only valid")
 	}
 }
@@ -1256,11 +1256,11 @@ spec:
 
 func TestInvalidArgumentNoFromOrLocation(t *testing.T) {
 	err := validate(invalidStepsArgumentNoFromOrLocation)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "from, artifact location, or key is required")
 	}
 	err = validate(invalidDAGArgumentNoFromOrLocation)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "from, artifact location, or key is required")
 	}
 }
@@ -1293,7 +1293,7 @@ spec:
 
 func TestInvalidArgumentNoValue(t *testing.T) {
 	err := validate(invalidArgumentNoValue)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), ".value or ")
 		assert.Contains(t, err.Error(), ".valueFrom is required")
 	}
@@ -1404,7 +1404,7 @@ func TestSpecArgumentNoValue(t *testing.T) {
 	assert.NoError(t, err)
 	err = ValidateWorkflow(wftmplGetter, cwftmplGetter, wf, ValidateOpts{})
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 var specArgumentSnakeCase = `
@@ -1500,7 +1500,7 @@ func TestCustomTemplatVariable(t *testing.T) {
 
 	err := ValidateWorkflow(wftmplGetter, cwftmplGetter, wf, ValidateOpts{Lint: true})
 
-	assert.Equal(t, err, nil)
+	assert.NoError(t, err)
 }
 
 var templateRefTarget = `
@@ -1647,7 +1647,7 @@ spec:
 
 func TestUndefinedTemplateRef(t *testing.T) {
 	err := validate(undefinedTemplateRef)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "not found")
 	}
 }
@@ -1676,7 +1676,7 @@ func TestValidResourceWorkflow(t *testing.T) {
 
 	err := ValidateWorkflow(wftmplGetter, cwftmplGetter, wf, ValidateOpts{})
 
-	assert.Equal(t, err, nil)
+	assert.NoError(t, err)
 }
 
 var invalidResourceWorkflow = `
@@ -2762,9 +2762,9 @@ func TestWorkflowTemplateWithArgumentValueNotFromEnumList(t *testing.T) {
 
 func TestWorkflowTemplateWithEnumValueWithoutValue(t *testing.T) {
 	err := validateWorkflowTemplate(workflowTeamplateWithEnumValuesWithoutValue, ValidateOpts{})
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	err = validateWorkflowTemplate(workflowTeamplateWithEnumValuesWithoutValue, ValidateOpts{Lint: true})
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	err = validateWorkflowTemplate(workflowTeamplateWithEnumValuesWithoutValue, ValidateOpts{Submit: true})
 	assert.EqualError(t, err, "spec.arguments.message.value or spec.arguments.message.valueFrom is required")
 }
@@ -2792,7 +2792,7 @@ func TestSubstituteResourceManifestExpressions(t *testing.T) {
 	// despite spacing in the expr itself we should have only 1 placeholder here
 	patt, _ := regexp.Compile(`placeholder\-\d+`)
 	matches := patt.FindAllString(replaced, -1)
-	assert.Exactly(t, 2, len(matches))
+	assert.Len(t, matches, 2)
 	assert.Equal(t, matches[0], matches[1])
 }
 
@@ -2926,7 +2926,7 @@ spec:
 
 func TestInvalidContainerSetDependencyNotFound(t *testing.T) {
 	err := validate(invalidContainerSetDependencyNotFound)
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "templates.main.containerSet.containers.b dependency 'c' not defined")
 	}
 }
@@ -2995,7 +2995,7 @@ spec:
 	}
 	for _, manifest := range invalidManifests {
 		err := validateWorkflowTemplate(manifest, ValidateOpts{})
-		if assert.NotNil(t, err) {
+		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), "containerSet.containers must have a container named \"main\" for input or output")
 		}
 	}
@@ -3390,7 +3390,7 @@ spec:
 func TestShouldCheckValidationToSpacedParameters(t *testing.T) {
 	err := validate(spacedParameterWorkflowTemplate)
 	// Do not allow leading or trailing spaces in parameters
-	if assert.NotNil(t, err) {
+	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "failed to resolve {{  workflow.thisdoesnotexist  }}")
 	}
 }

@@ -47,7 +47,7 @@ func NewGetCommand() *cobra.Command {
 func printWorkflowTemplate(wf *wfv1.WorkflowTemplate, outFmt string) {
 	switch outFmt {
 	case "name":
-		fmt.Println(wf.ObjectMeta.Name)
+		fmt.Println(wf.Name)
 	case "json":
 		outBytes, _ := json.MarshalIndent(wf, "", "    ")
 		fmt.Println(string(outBytes))
@@ -63,7 +63,7 @@ func printWorkflowTemplate(wf *wfv1.WorkflowTemplate, outFmt string) {
 
 func printWorkflowTemplateHelper(wf *wfv1.WorkflowTemplate) {
 	const fmtStr = "%-20s %v\n"
-	fmt.Printf(fmtStr, "Name:", wf.ObjectMeta.Name)
-	fmt.Printf(fmtStr, "Namespace:", wf.ObjectMeta.Namespace)
-	fmt.Printf(fmtStr, "Created:", humanize.Timestamp(wf.ObjectMeta.CreationTimestamp.Time))
+	fmt.Printf(fmtStr, "Name:", wf.Name)
+	fmt.Printf(fmtStr, "Namespace:", wf.Namespace)
+	fmt.Printf(fmtStr, "Created:", humanize.Timestamp(wf.CreationTimestamp.Time))
 }

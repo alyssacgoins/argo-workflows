@@ -109,7 +109,7 @@ spec:
 		for _, pod := range pods.Items {
 			assert.NotNil(t, pod)
 			assert.True(t, strings.HasSuffix(pod.Name, "-agent"))
-			assert.Equal(t, "testID", pod.ObjectMeta.Labels[common.LabelKeyControllerInstanceID])
+			assert.Equal(t, "testID", pod.Labels[common.LabelKeyControllerInstanceID])
 		}
 	})
 }
@@ -305,8 +305,8 @@ status:
 			assert.NotNil(t, ts)
 			assert.Equal(t, ts.Name, wf.Name)
 			assert.Equal(t, ts.Namespace, wf.Namespace)
-			assert.Len(t, ts.Spec.Tasks, 0)
-			assert.Len(t, ts.Status.Nodes, 0)
+			assert.Empty(t, ts.Spec.Tasks)
+			assert.Empty(t, ts.Status.Nodes)
 		}
 
 	})

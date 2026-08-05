@@ -52,7 +52,7 @@ func NewGetCommand() *cobra.Command {
 func printCronWorkflow(wf *wfv1.CronWorkflow, outFmt string) {
 	switch outFmt {
 	case "name":
-		fmt.Println(wf.ObjectMeta.Name)
+		fmt.Println(wf.Name)
 	case "json":
 		outBytes, _ := json.MarshalIndent(wf, "", "    ")
 		fmt.Println(string(outBytes))
@@ -70,9 +70,9 @@ func getCronWorkflowGet(cwf *wfv1.CronWorkflow) string {
 	const fmtStr = "%-30s %v\n"
 
 	out := ""
-	out += fmt.Sprintf(fmtStr, "Name:", cwf.ObjectMeta.Name)
-	out += fmt.Sprintf(fmtStr, "Namespace:", cwf.ObjectMeta.Namespace)
-	out += fmt.Sprintf(fmtStr, "Created:", humanize.Timestamp(cwf.ObjectMeta.CreationTimestamp.Time))
+	out += fmt.Sprintf(fmtStr, "Name:", cwf.Name)
+	out += fmt.Sprintf(fmtStr, "Namespace:", cwf.Namespace)
+	out += fmt.Sprintf(fmtStr, "Created:", humanize.Timestamp(cwf.CreationTimestamp.Time))
 	out += fmt.Sprintf(fmtStr, "Schedule:", cwf.Spec.Schedule)
 	out += fmt.Sprintf(fmtStr, "Suspended:", cwf.Spec.Suspend)
 	if cwf.Spec.Timezone != "" {

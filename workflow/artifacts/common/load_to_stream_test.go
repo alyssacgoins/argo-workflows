@@ -106,7 +106,7 @@ func TestLoadToStream(t *testing.T) {
 
 			stream, err := LoadToStream(&wfv1.Artifact{}, tc.artifactDriver)
 			if tc.errMsg == "" {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.NotNil(t, stream)
 				stream.Close()
 
@@ -115,9 +115,9 @@ func TestLoadToStream(t *testing.T) {
 				if err != nil {
 					panic(err)
 				}
-				assert.Equal(t, len(filesBefore), len(filesAfter))
+				assert.Len(t, filesAfter, len(filesBefore))
 			} else {
-				assert.NotNil(t, err)
+				assert.Error(t, err)
 				assert.Equal(t, tc.errMsg, err.Error())
 			}
 		})

@@ -54,10 +54,10 @@ func Test_infoServer_GetInfo(t *testing.T) {
 		i := &infoServer{}
 		info, err := i.GetInfo(context.TODO(), nil)
 		if assert.NoError(t, err) {
-			assert.Equal(t, "", info.ManagedNamespace)
-			assert.Equal(t, 0, len(info.Links))
-			assert.Equal(t, 0, len(info.Columns))
-			assert.Equal(t, "", info.NavColor)
+			assert.Empty(t, info.ManagedNamespace)
+			assert.Empty(t, info.Links)
+			assert.Empty(t, info.Columns)
+			assert.Empty(t, info.NavColor)
 		}
 	})
 }
