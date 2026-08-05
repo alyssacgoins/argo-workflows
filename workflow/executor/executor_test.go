@@ -121,7 +121,7 @@ func TestIsBaseImagePath(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: "/samedir",
+					Path: string(os.PathSeparator) + "samedir",
 				},
 			},
 		},
@@ -130,7 +130,7 @@ func TestIsBaseImagePath(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: "/samedir",
+					Path: string(os.PathSeparator) + "samedir",
 				},
 			},
 		},
@@ -376,7 +376,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: "/samedir",
+					Path: string(os.PathSeparator) + "samedir",
 				},
 			},
 		},
@@ -384,7 +384,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name:     "samedir",
-					Path:     "/samedir",
+					Path:     string(os.PathSeparator) + "samedir",
 					Optional: true,
 				},
 			},
@@ -395,7 +395,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: "/samedir",
+					Path: string(os.PathSeparator) + "samedir",
 				},
 			},
 		},
@@ -403,7 +403,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name:     "samedir",
-					Path:     "/samedir",
+					Path:     string(os.PathSeparator) + "samedir",
 					Optional: false,
 				},
 			},
@@ -414,7 +414,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name: "samedir",
-					Path: "/samedir",
+					Path: string(os.PathSeparator) + "samedir",
 				},
 			},
 		},
@@ -422,7 +422,7 @@ func TestSaveArtifacts(t *testing.T) {
 			Artifacts: []wfv1.Artifact{
 				{
 					Name:     "samedir",
-					Path:     "/samedir",
+					Path:     string(os.PathSeparator) + "samedir",
 					Optional: true,
 					Archive: &wfv1.ArchiveStrategy{
 						Zip: &wfv1.ZipStrategy{},
@@ -558,7 +558,7 @@ func TestReportOutputs(t *testing.T) {
 		artifacts := []wfv1.Artifact{
 			{
 				Name: "samedir",
-				Path: "/samedir",
+				Path: string(os.PathSeparator) + "samedir",
 			},
 		}
 		templateWithArtifacts := wfv1.Template{

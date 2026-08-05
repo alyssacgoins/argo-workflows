@@ -290,7 +290,7 @@ swagger: \
 $(GOPATH)/bin/mockery:
 # update this in Nix when upgrading it here
 ifneq ($(USE_NIX), true)
-	go install github.com/vektra/mockery/v2@v2.26.0
+	go install github.com/vektra/mockery/v2@v2.53.3
 endif
 $(GOPATH)/bin/controller-gen:
 # update this in Nix when upgrading it here
@@ -335,7 +335,7 @@ endif
 $(GOPATH)/bin/swagger:
 # update this in Nix when upgrading it here
 ifneq ($(USE_NIX), true)
-	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.28.0
+	go install github.com/go-swagger/go-swagger/cmd/swagger@v0.33.0
 endif
 $(GOPATH)/bin/goimports:
 # update this in Nix when upgrading it here
