@@ -4,9 +4,6 @@ import (
 	"net/http"
 	"net/textproto"
 	"strings"
-
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 )
 
 func IncomingHeaderMatcher(key string) (string, bool) {
@@ -47,8 +44,11 @@ func IncomingHeaderMatcher(key string) (string, bool) {
 // Once a request is recognized as h2c, we hijack the connection and convert it
 // to an HTTP/2 connection which is understandable to s.ServeConn. (s.ServeConn
 // understands HTTP/2 except for the h2c part of it.)"
+//
+// Note: h2c support is now handled by http.Server.Protocols configuration
+// rather than the deprecated h2c.NewHandler wrapper.
 func NewMuxHandler(grpcServerHandler http.Handler, httpServerHandler http.Handler) http.Handler {
-	return h2c.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Match against "Content-Type", which is guaranteed to start with "application/grpc" for gRPC requests.
 		// Spec: https://chromium.googlesource.com/external/github.com/grpc/grpc/+/HEAD/doc/PROTOCOL-HTTP2.md
 		if r.ProtoMajor == 2 && strings.HasPrefix(r.Header.Get("Content-Type"), "application/grpc") {
@@ -56,5 +56,5 @@ func NewMuxHandler(grpcServerHandler http.Handler, httpServerHandler http.Handle
 		} else {
 			httpServerHandler.ServeHTTP(w, r)
 		}
-	}), &http2.Server{})
+	})
 }

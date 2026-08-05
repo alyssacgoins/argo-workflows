@@ -263,9 +263,18 @@ func (as *argoServer) Run(ctx context.Context, port int, browserOpenFunc func(st
 
 	handler := grpcutil.NewMuxHandler(grpcServer, httpServer)
 
+	// Configure HTTP server with HTTP/2 cleartext (h2c) support
+	srv := &http.Server{
+		Handler: handler,
+	}
+	// Enable HTTP/2 cleartext support (replaces deprecated h2c package)
+	srv.Protocols = new(http.Protocols)
+	srv.Protocols.SetHTTP1(true)
+	srv.Protocols.SetUnencryptedHTTP2(true)
+
 	go eventServer.Run(as.stopCh)
 	go workflowServer.Run(as.stopCh)
-	go func() { as.checkServeErr("httpServer", http.Serve(conn, handler)) }()
+	go func() { as.checkServeErr("httpServer", srv.Serve(conn)) }()
 	url := "http://localhost" + address
 	if as.tlsConfig != nil {
 		url = "https://localhost" + address
