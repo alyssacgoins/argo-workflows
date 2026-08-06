@@ -265,11 +265,14 @@ func (as *argoServer) Run(ctx context.Context, port int, browserOpenFunc func(st
 
 	// Configure HTTP server with HTTP/2 cleartext (h2c) support
 	srv := &http.Server{
-		Handler: handler,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,  // Prevent slowloris attacks
+		IdleTimeout:       120 * time.Second, // Close idle connections
 	}
-	// Enable HTTP/2 cleartext support (replaces deprecated h2c package)
+	// Enable HTTP/2 (with TLS), HTTP/2 cleartext (h2c), and HTTP/1.1 fallback. Replaces deprecated h2c package.
 	srv.Protocols = new(http.Protocols)
 	srv.Protocols.SetHTTP1(true)
+	srv.Protocols.SetHTTP2(true)
 	srv.Protocols.SetUnencryptedHTTP2(true)
 
 	go eventServer.Run(as.stopCh)
