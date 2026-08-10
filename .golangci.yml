@@ -49,11 +49,6 @@ linters:
         - "-ST1005"
         # Receiver names
         - "-ST1016"
-        # Pre-existing on rhoai-2.25 (not introduced by Go 1.26.3 bump)
-        - "-ST1012"
-        - "-SA1019"
-        - "-ST1019"
-        - "-S1009"
   exclusions:
     generated: lax
     presets:

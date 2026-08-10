@@ -13,7 +13,6 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1"
 	wfv1 "github.com/argoproj/argo-workflows/v3/pkg/apis/workflow/v1alpha1"
 	"github.com/argoproj/argo-workflows/v3/test/e2e/fixtures"
 	"github.com/argoproj/argo-workflows/v3/workflow/common"
@@ -76,9 +75,9 @@ spec:
 				}
 			}
 		}).
-		ExpectWorkflowNode(func(status v1alpha1.NodeStatus) bool {
+		ExpectWorkflowNode(func(status wfv1.NodeStatus) bool {
 			return strings.Contains(status.Name, "fanout(0:1)")
-		}, func(t *testing.T, status *v1alpha1.NodeStatus, pod *apiv1.Pod) {
+		}, func(t *testing.T, status *wfv1.NodeStatus, pod *apiv1.Pod) {
 			for _, c := range pod.Status.ContainerStatuses {
 				if c.Name == common.WaitContainerName && c.State.Terminated == nil {
 					assert.NotNil(t, c.State.Waiting)
@@ -87,9 +86,9 @@ spec:
 				}
 			}
 		}).
-		ExpectWorkflowNode(func(status v1alpha1.NodeStatus) bool {
+		ExpectWorkflowNode(func(status wfv1.NodeStatus) bool {
 			return strings.Contains(status.Name, "fanout(1:2)")
-		}, func(t *testing.T, status *v1alpha1.NodeStatus, pod *apiv1.Pod) {
+		}, func(t *testing.T, status *wfv1.NodeStatus, pod *apiv1.Pod) {
 			for _, c := range pod.Status.ContainerStatuses {
 				if c.Name == common.WaitContainerName && c.State.Terminated == nil {
 					assert.NotNil(t, c.State.Waiting)
@@ -98,9 +97,9 @@ spec:
 				}
 			}
 		})).
-		ExpectWorkflowNode(func(status v1alpha1.NodeStatus) bool {
+		ExpectWorkflowNode(func(status wfv1.NodeStatus) bool {
 			return strings.Contains(status.Name, "fanout(2:3)")
-		}, func(t *testing.T, status *v1alpha1.NodeStatus, pod *apiv1.Pod) {
+		}, func(t *testing.T, status *wfv1.NodeStatus, pod *apiv1.Pod) {
 			for _, c := range pod.Status.ContainerStatuses {
 				if c.Name == common.WaitContainerName && c.State.Terminated == nil {
 					assert.NotNil(t, c.State.Waiting)
@@ -109,9 +108,9 @@ spec:
 				}
 			}
 		}).
-		ExpectWorkflowNode(func(status v1alpha1.NodeStatus) bool {
+		ExpectWorkflowNode(func(status wfv1.NodeStatus) bool {
 			return strings.Contains(status.Name, "fanout(3:4)")
-		}, func(t *testing.T, status *v1alpha1.NodeStatus, pod *apiv1.Pod) {
+		}, func(t *testing.T, status *wfv1.NodeStatus, pod *apiv1.Pod) {
 			for _, c := range pod.Status.ContainerStatuses {
 				if c.Name == common.WaitContainerName && c.State.Terminated == nil {
 					assert.NotNil(t, c.State.Waiting)
@@ -151,9 +150,9 @@ spec:
 		ExpectWorkflow(func(t *testing.T, metadata *metav1.ObjectMeta, status *wfv1.WorkflowStatus) {
 			assert.Equal(t, wfv1.WorkflowSucceeded, status.Phase)
 		}).
-		ExpectWorkflowNode(func(status v1alpha1.NodeStatus) bool {
+		ExpectWorkflowNode(func(status wfv1.NodeStatus) bool {
 			return strings.Contains(status.Name, "a")
-		}, func(t *testing.T, status *v1alpha1.NodeStatus, pod *apiv1.Pod) {
+		}, func(t *testing.T, status *wfv1.NodeStatus, pod *apiv1.Pod) {
 			assert.NotContains(t, pod.Name, "--")
 		})
 }

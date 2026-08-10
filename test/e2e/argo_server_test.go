@@ -74,16 +74,16 @@ func (s *ArgoServerSuite) TestInfo() {
 			JSON()
 		json.
 			Path("$.managedNamespace").
-			Equal("argo")
+			IsEqual("argo")
 		json.
 			Path("$.links[0].name").
-			Equal("Workflow Link")
+			IsEqual("Workflow Link")
 		json.
 			Path("$.links[0].scope").
-			Equal("workflow")
+			IsEqual("workflow")
 		json.
 			Path("$.links[0].url").
-			Equal("http://logging-facility?namespace=${metadata.namespace}&workflowName=${metadata.name}&startedAt=${status.startedAt}&finishedAt=${status.finishedAt}")
+			IsEqual("http://logging-facility?namespace=${metadata.namespace}&workflowName=${metadata.name}&startedAt=${status.startedAt}&finishedAt=${status.finishedAt}")
 	})
 }
 
@@ -507,7 +507,7 @@ func (s *ArgoServerSuite) TestPermission() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 
 	s.Given().
@@ -813,7 +813,7 @@ func (s *ArgoServerSuite) TestWorkflowService() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 		j.Path("$.items[0].status.nodes").
 			NotNull()
 	})
@@ -831,7 +831,7 @@ func (s *ArgoServerSuite) TestWorkflowService() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 		j.Path("$.items[0].status").Object().ContainsKey("phase").NotContainsKey("nodes")
 	})
 
@@ -866,7 +866,7 @@ func (s *ArgoServerSuite) TestWorkflowService() {
 			Status(200).
 			JSON().
 			Path("$.spec.suspend").
-			Equal(true)
+			IsEqual(true)
 	})
 
 	s.Run("Resume", func() {
@@ -898,7 +898,7 @@ func (s *ArgoServerSuite) TestWorkflowService() {
 			Status(200).
 			JSON().
 			Path("$.status.message").
-			Equal("Stopped with strategy 'Terminate'")
+			IsEqual("Stopped with strategy 'Terminate'")
 	})
 
 	s.Run("Resubmit", func() {
@@ -959,7 +959,7 @@ func (s *ArgoServerSuite) TestCronWorkflowService() {
 			Status(200).
 			JSON().
 			Path("$.spec.suspend").
-			Equal(true)
+			IsEqual(true)
 	})
 
 	s.Run("Resume", func() {
@@ -1006,7 +1006,7 @@ spec:
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 
 	var resourceVersion string
@@ -1056,7 +1056,7 @@ spec:
 			Status(200).
 			JSON().
 			Path("$.spec.schedule").
-			Equal("1 * * * *")
+			IsEqual("1 * * * *")
 	})
 
 	s.Run("Delete", func() {
@@ -1149,10 +1149,10 @@ func (s *ArgoServerSuite) artifactServerRetrievalTests(name string, uid types.UI
 			Contains(":) Hello Argo!")
 
 		resp.Header("Content-Security-Policy").
-			Equal("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
+			IsEqual("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
 
 		resp.Header("X-Frame-Options").
-			Equal("SAMEORIGIN")
+			IsEqual("SAMEORIGIN")
 	})
 
 	// In this case, the artifact name is a file
@@ -1165,10 +1165,10 @@ func (s *ArgoServerSuite) artifactServerRetrievalTests(name string, uid types.UI
 			Contains(":) Hello Argo!")
 
 		resp.Header("Content-Security-Policy").
-			Equal("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
+			IsEqual("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
 
 		resp.Header("X-Frame-Options").
-			Equal("SAMEORIGIN")
+			IsEqual("SAMEORIGIN")
 	})
 
 	// In this case, the artifact name is a directory
@@ -1204,10 +1204,10 @@ func (s *ArgoServerSuite) artifactServerRetrievalTests(name string, uid types.UI
 			Contains(":) Hello Argo!")
 
 		resp.Header("Content-Security-Policy").
-			Equal("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
+			IsEqual("sandbox; base-uri 'none'; default-src 'none'; img-src 'self'; style-src 'self' 'unsafe-inline'")
 
 		resp.Header("X-Frame-Options").
-			Equal("SAMEORIGIN")
+			IsEqual("SAMEORIGIN")
 	})
 
 	// In this case, the artifact name is a file
@@ -1427,11 +1427,11 @@ spec:
 				Path("$.items")
 
 			if tt.wantLen == 0 {
-				path.Null()
+				path.IsNull()
 			} else {
 				path.Array().
 					Length().
-					Equal(tt.wantLen)
+					IsEqual(tt.wantLen)
 			}
 		})
 	}
@@ -1449,10 +1449,10 @@ spec:
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 		j.
 			Path("$.metadata.continue").
-			Equal("1")
+			IsEqual("1")
 	})
 
 	s.Run("ListWithMinStartedAtGood", func() {
@@ -1467,7 +1467,7 @@ spec:
 			Path("$.items").
 			Array().
 			Length().
-			Equal(2)
+			IsEqual(2)
 	})
 
 	s.Run("ListWithMinStartedAtBad", func() {
@@ -1478,7 +1478,7 @@ spec:
 			Expect().
 			Status(200).
 			JSON().
-			Path("$.items").Null()
+			Path("$.items").IsNull()
 	})
 
 	s.Run("Get", func() {
@@ -1494,13 +1494,13 @@ spec:
 			NotNull()
 		j.
 			Path(fmt.Sprintf("$.metadata.labels[\"%s\"]", common.LabelKeyWorkflowArchivingStatus)).
-			Equal("Persisted")
+			IsEqual("Persisted")
 		s.e().GET("/api/v1/workflows/argo/" + name).
 			Expect().
 			Status(200).
 			JSON().
 			Path(fmt.Sprintf("$.metadata.labels[\"%s\"]", common.LabelKeyWorkflowArchivingStatus)).
-			Equal("Archived")
+			IsEqual("Archived")
 	})
 
 	s.Run("DeleteForRetry", func() {
@@ -1564,7 +1564,7 @@ spec:
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 
 }
@@ -1675,7 +1675,7 @@ func (s *ArgoServerSuite) TestWorkflowTemplateService() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 
 	var resourceVersion string
@@ -1722,7 +1722,7 @@ func (s *ArgoServerSuite) TestWorkflowTemplateService() {
 			Status(200).
 			JSON().
 			Path("$.spec.templates[0].container.image").
-			Equal("argoproj/argosay:v2")
+			IsEqual("argoproj/argosay:v2")
 	})
 
 	s.Run("Delete", func() {
@@ -1895,7 +1895,7 @@ func (s *ArgoServerSuite) TestEventSourcesService() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 	s.Run("WatchEventSources", func() {
 		s.stream("/api/v1/stream/event-sources/argo", func(t *testing.T, line string) (done bool) {
@@ -1997,7 +1997,7 @@ func (s *ArgoServerSuite) TestSensorService() {
 			Path("$.items").
 			Array().
 			Length().
-			Equal(1)
+			IsEqual(1)
 	})
 	s.Run("GetSensor", func() {
 		s.e().GET("/api/v1/sensors/argo/test-sensor").
@@ -2005,7 +2005,7 @@ func (s *ArgoServerSuite) TestSensorService() {
 			Status(200).
 			JSON().
 			Path("$.metadata.name").
-			Equal("test-sensor")
+			IsEqual("test-sensor")
 	})
 	s.Run("WatchSensors", func() {
 		s.stream("/api/v1/stream/sensors/argo", func(t *testing.T, line string) (done bool) {
@@ -2073,7 +2073,7 @@ func (s *ArgoServerSuite) TestSensorService() {
 			Status(200).
 			JSON().
 			Path("$.spec.template.serviceAccountName").
-			Equal("default")
+			IsEqual("default")
 	})
 	s.Run("DeleteSensor", func() {
 		s.e().DELETE("/api/v1/sensors/argo/test-sensor").
@@ -2091,7 +2091,7 @@ func (s *ArgoServerSuite) TestRateLimitHeader() {
 		resp.Header("X-RateLimit-Limit").NotEmpty()
 		resp.Header("X-RateLimit-Remaining").NotEmpty()
 		resp.Header("X-RateLimit-Reset").NotEmpty()
-		resp.Header("Retry-After").Empty()
+		resp.Header("Retry-After").IsEmpty()
 	})
 }
 
