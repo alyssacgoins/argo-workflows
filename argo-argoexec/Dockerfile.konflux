@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache
 RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build GIT_COMMIT=${GIT_COMMIT} GIT_TAG=${GIT_TAG} GIT_TREE_STATE=${GIT_TREE_STATE} CGO_ENABLED=0 go build -ldflags '-extldflags -static' -v  -o dist/argoexec ./cmd/argoexec
 
 ####################################################################################################
-FROM registry.redhat.io/ubi9/ubi-minimal@sha256:bba2b4bbf0ed15cfe7dd72a1e17ae7d2015a141f306b304e1a2785c41400e39c AS workflow-controller
+FROM registry.redhat.io/ubi9/ubi-minimal@sha256:dfa0eb04abc59221544e74862432496add1f491f915c9b531880f91affc0e12c AS workflow-controller
 
 
 ARG CI_CONTAINER_VERSION
